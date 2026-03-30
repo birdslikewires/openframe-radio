@@ -20,7 +20,7 @@ Channel changes are handled via `inotifywait` — writing a new channel number t
 Run the installer as root. It will prompt for your HDHomeRun's IP address, then download, configure, and start the service automatically:
 
 ```bash
-sudo bash <(curl -fsSL https://raw.githubusercontent.com/birdslikewires/openframe-radio/main/install.sh)
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/birdslikewires/openframe-radio/main/install.sh)"
 ```
 
 ## Usage
