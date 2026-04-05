@@ -79,7 +79,12 @@ else
 
         if ! command -v mpg123 &>/dev/null; then
             echo "Installing mpg123..."
-            of-install mpg123
+            apt-get install -y mpg123
+        fi
+
+        if ! command -v inotifywait &>/dev/null; then
+            echo "Installing inotify-tools..."
+            apt-get install -y inotify-tools
         fi
 
         SED_ARGS=(-e "s/mode=\"[^\"]*\"/mode=\"mpg123\"/"
@@ -97,6 +102,11 @@ else
         if ! command -v mplayer &>/dev/null; then
             echo "Installing mplayer..."
             of-install mplayer
+        fi
+
+        if ! command -v inotifywait &>/dev/null; then
+            echo "Installing inotify-tools..."
+            apt-get install -y inotify-tools
         fi
 
         SED_ARGS=(-e "s/mode=\"[^\"]*\"/mode=\"mplayer\"/"
@@ -134,7 +144,7 @@ else
 
         if ! command -v shairport-sync &>/dev/null; then
             echo "Installing shairport-sync..."
-            of-install shairport-sync
+            apt-get install -y shairport-sync
         fi
 
         echo "Configuring shairport-sync..."
