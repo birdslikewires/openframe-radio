@@ -1,0 +1,6 @@
+[Unit]
+Description=Radio stream cleanup
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/radio-cleanup.sh

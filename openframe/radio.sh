@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
-## radio.sh v1.08 (16th March 2026)
-##  Streams the radio from a HDHomeRun and restarts it if there's a problem.
+## radio.sh v1.10 (5th April 2026)
+##  Streams radio to OpenFrame and restarts if there's a problem.
 ##  Use the accompanying radio.service file.
 
+mode="mpg123"
+radioip=""
 hdhrip=""
 channel="707"
+volume="50"
 tmploc="/tmp/radio"
 
 # Set up our temporary location with access for any audio group member.
@@ -59,19 +62,8 @@ while inotifywait -e close_write "$tmploc/channel"; do
 	systemctl restart radio.service
 done &
 
-mplayer -novideo -cache 512 -cache-min 80 -softvol -volume 50 "http://$hdhrip:5004/auto/v$channel" &
-
-# Monitor the journal and restart the service if mplayer runs into trouble.
-while true; do
-	sleep 10
-	log=$(journalctl -n 6 -u radio.service)
-
-	if [[ "$log" =~ "Cache empty"               ]] ||
-	   [[ "$log" =~ "Network is unreachable"    ]] ||
-	   [[ "$log" =~ "No route"                  ]] ||
-	   [[ "$log" =~ "Trying to reset soundcard" ]] ||
-	   [[ "$log" =~ "Failed to open"            ]] ||
-	   [[ "$log" =~ "End of file"               ]]; then
-		systemctl restart radio.service
-	fi
-done
+if [ "$mode" = "mpg123" ]; then
+	exec mpg123 -q --buffer 1024 -f $(( 32768 * volume / 100 )) "http://$radioip:5111/$channel"
+else
+	exec mplayer -novideo -cache 512 -cache-min 80 -softvol -volume "$volume" "http://$hdhrip:5004/auto/v$channel"
+fi
