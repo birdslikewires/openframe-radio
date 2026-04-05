@@ -31,9 +31,9 @@ sys.exit(0 if any(x.get('listenurl','').endswith('/$CHANNEL') for x in s) else 1
         ffmpeg -hide_banner -loglevel error \
             -probesize "$BUFFER" \
             -i "http://$HDHRIP:5004/auto/v$CHANNEL" \
-            -vn -acodec libmp3lame -f mp3 \
+            -vn -acodec libmp3lame -b:a 128k -f mp3 \
             "icecast://source:$ICECAST_PASS@localhost:8000/$CHANNEL" \
-            </dev/null >/dev/null 2>&1 &
+            </dev/null >/dev/null 2>&1 9>&- &
 
         echo $! > "$STREAMDIR/$CHANNEL.pid"
 
@@ -45,6 +45,15 @@ sys.exit(0 if any(x.get('listenurl','').endswith('/$CHANNEL') for x in s) else 1
     fi
 
 ) 9>"$STREAMDIR/$CHANNEL.lock"
+
+# If the mount still isn't up, ffmpeg failed (e.g. no tuner available)
+if ! icecast_has_mount; then
+    PID=$(cat "$STREAMDIR/$CHANNEL.pid" 2>/dev/null)
+    [ -n "$PID" ] && kill "$PID" 2>/dev/null
+    rm -f "$STREAMDIR/$CHANNEL.pid"
+    printf "Status: 503 Service Unavailable\r\nContent-Type: text/plain\r\n\r\nNo tuner available.\n"
+    exit 1
+fi
 
 HOST=$(echo "$HTTP_HOST" | cut -d: -f1)
 printf "Status: 302 Found\r\nLocation: http://%s:5111/stream/%s\r\n\r\n" "$HOST" "$CHANNEL"

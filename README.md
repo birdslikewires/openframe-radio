@@ -7,8 +7,8 @@ Streams radio from an [HDHomeRun](https://www.silicondust.com/) network tuner to
 
 ```
 mpg123 mode:  HDHomeRun → ffmpeg → Icecast ─┬→ OpenFrame
-                                             ├→ OpenFrame
-                                             └→ OpenFrame
+                                            ├→ OpenFrame
+                                            └→ OpenFrame
 mplayer mode: HDHomeRun → OpenFrame
 ```
 

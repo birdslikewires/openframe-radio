@@ -63,7 +63,7 @@ while inotifywait -e close_write "$tmploc/channel"; do
 done &
 
 if [ "$mode" = "mpg123" ]; then
-	exec mpg123 -q --buffer 1024 -f $(( 32768 * volume / 100 )) "http://$radioip:5111/$channel"
+	exec env DISPLAY= mpg123 -q --buffer 1024 -f $(( 32768 * volume / 100 )) "http://$radioip:5111/$channel"
 else
 	exec mplayer -novideo -cache 512 -cache-min 80 -softvol -volume "$volume" "http://$hdhrip:5004/auto/v$channel"
 fi
