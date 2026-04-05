@@ -24,6 +24,7 @@ mplayer mode: HDHomeRun → OpenFrame
 - `mpg123` (mpg123 mode) or `mplayer` (mplayer mode)
 - `inotifywait` (from `inotify-tools`)
 - `systemd`
+- `shairport-sync` *(optional — AirPlay receiver; pauses/resumes radio automatically)*
 
 Dependencies are installed automatically by the installer where possible.
 

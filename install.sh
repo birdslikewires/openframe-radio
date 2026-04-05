@@ -119,10 +119,44 @@ else
         | sed "s|ExecStart=.*|ExecStart=$INSTALL_DIR/radio.sh|" \
         > "$SERVICE_DIR/radio.service"
 
+    echo "Installing /usr/local/bin/radio..."
+    ln -sf "$INSTALL_DIR/radio.sh" /usr/local/bin/radio
+
     echo "Enabling and starting radio.service..."
     systemctl daemon-reload
     systemctl enable radio.service
     systemctl start radio.service
+
+    read -rp "Install shairport-sync (AirPlay)? [y/N] " install_shairport
+    if [[ "$install_shairport" =~ ^[Yy]$ ]]; then
+
+        read -rp "AirPlay device name: " device_name
+
+        if ! command -v shairport-sync &>/dev/null; then
+            echo "Installing shairport-sync..."
+            of-install shairport-sync
+        fi
+
+        echo "Configuring shairport-sync..."
+        cat > /etc/shairport-sync.conf << EOF
+general =
+{
+        name = "$device_name";
+        ignore_volume_control = "yes";
+};
+
+sessioncontrol =
+{
+        run_this_before_entering_active_state = "/usr/local/bin/radio pause";
+        run_this_after_exiting_active_state = "/usr/local/bin/radio play";
+        active_state_timeout = 10.0;
+};
+EOF
+
+        systemctl enable shairport-sync
+        systemctl restart shairport-sync
+
+    fi
 
     echo "Done. Radio service is running."
 
