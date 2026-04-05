@@ -12,6 +12,10 @@ fi
 
 mkdir -p "$STREAMDIR"
 
+free_tuners() {
+    curl -sf "http://$HDHRIP/tuners.html" | grep -c "not in use"
+}
+
 icecast_has_mount() {
     curl -sf "http://localhost:8000/status-json.xsl" | python3 -c "
 import sys,json
@@ -21,6 +25,12 @@ if isinstance(s,dict): s=[s]
 sys.exit(0 if any(x.get('listenurl','').endswith('/$CHANNEL') for x in s) else 1)
 "
 }
+
+# Fail fast if all tuners are busy and no mount exists for this channel
+if ! icecast_has_mount && [ "$(free_tuners)" -eq 0 ]; then
+    printf "Status: 503 Service Unavailable\r\nContent-Type: text/plain\r\n\r\nNo tuner available.\n"
+    exit 1
+fi
 
 (
     flock -x 9
