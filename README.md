@@ -2,7 +2,7 @@
 
 Streams radio from an [HDHomeRun](https://www.silicondust.com/) network tuner to an [OpenFrame](https://github.com/openframe) device. Two player modes are supported:
 
-- **mpg123 via transcoder** — a Raspberry Pi pulls the stream from the HDHomeRun, transcodes it to MP3 via ffmpeg, and distributes it via Icecast. Multiple OpenFrames on the same channel share a single transcode and a single tuner. Streams start on demand and stop automatically when the last listener disconnects. Recommended for OpenFrame's Atom Z520, which can't easily demux MPEG-TS directly.
+- **mpg123 via transcoder** — a Raspberry Pi pulls the stream from the HDHomeRun, transcodes it to MP3 via ffmpeg, and distributes it via Icecast. Multiple OpenFrames on the same channel share a single transcode and a single tuner. Streams start on demand and stop automatically when the last listener disconnects.
 - **mplayer direct** — OpenFrame streams directly from the HDHomeRun using mplayer. Simpler setup, no Pi required.
 
 ```
