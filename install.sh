@@ -77,6 +77,8 @@ else
             exit 1
         fi
 
+		apt-get update
+
         if ! command -v mpg123 &>/dev/null; then
             echo "Installing mpg123..."
             apt-get install -y mpg123
