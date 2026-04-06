@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-## radio.sh v1.10 (5th April 2026)
+## radio.sh v1.11 (6th April 2026)
 ##  Streams radio to OpenFrame and restarts if there's a problem.
 ##  Use the accompanying radio.service file.
 
@@ -23,7 +23,7 @@ fi
 # Handle play, pause and channel selection.
 if [ "$1" == "pause" ]; then
 	[ -f "$tmploc/channel" ] && cp "$tmploc/channel" "$tmploc/paused"
-	echo 0 > $tmploc/channel
+	systemctl stop radio.service
 	exit 0
 elif [ "$1" == "play" ]; then
 	if [ -f "$tmploc/paused" ]; then
@@ -32,7 +32,7 @@ elif [ "$1" == "play" ]; then
 	else
 		echo "$channel" > "$tmploc/channel"
 	fi
-	systemctl restart radio.service
+	systemctl start radio.service
 	exit 0
 elif [[ "$1" =~ ^[+-]?[0-9]+$ ]]; then
 	echo "$1" > "$tmploc/channel"
