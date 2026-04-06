@@ -3,13 +3,13 @@
 Streams radio from an [HDHomeRun](https://www.silicondust.com/) network tuner to an [OpenFrame](https://github.com/openframe) device. Two player modes are supported:
 
 - **mpg123 via transcoder** — a Raspberry Pi pulls the stream from the HDHomeRun, transcodes it to MP3 via ffmpeg, and distributes it via Icecast. Multiple OpenFrames on the same channel share a single transcode and a single tuner. Streams start on demand and stop automatically when the last listener disconnects.
-- **mplayer direct** — OpenFrame streams directly from the HDHomeRun using mplayer. Simpler setup, no Pi required.
+- **mpv direct** — OpenFrame streams directly from the HDHomeRun using mpv. Simpler setup, no Pi required.
 
 ```
-mpg123 mode:  HDHomeRun → ffmpeg → Icecast ─┬→ OpenFrame
-                                            ├→ OpenFrame
-                                            └→ OpenFrame
-mplayer mode: HDHomeRun → OpenFrame
+mpg123 mode: HDHomeRun → ffmpeg → Icecast ─┬→ OpenFrame
+                                           ├→ OpenFrame
+                                           └→ OpenFrame
+mpv mode:    HDHomeRun → OpenFrame
 ```
 
 ## Requirements
@@ -21,7 +21,7 @@ mplayer mode: HDHomeRun → OpenFrame
 - `icecast2`
 
 **OpenFrame**
-- `mpg123` (mpg123 mode) or `mplayer` (mplayer mode)
+- `mpg123` (mpg123 mode) or `mpv` (mpv mode)
 - `inotifywait` (from `inotify-tools`)
 - `systemd`
 - `shairport-sync` *(optional — AirPlay receiver; pauses/resumes radio automatically)*
@@ -60,9 +60,9 @@ radio 707              # Switch to channel 707
 
 | Variable   | Default              | Description                          |
 |------------|----------------------|--------------------------------------|
-| `mode`     | `mpg123`             | Player mode (`mpg123` or `mplayer`)  |
+| `mode`     | `mpg123`             | Player mode (`mpg123` or `mpv`)      |
 | `radioip`  | *(set by installer)* | Transcoder IP address (mpg123 mode)  |
-| `hdhrip`   | *(set by installer)* | HDHomeRun IP address (mplayer mode)  |
+| `hdhrip`   | *(set by installer)* | HDHomeRun IP address (mpv mode)      |
 | `channel`  | `707`                | Default channel on startup           |
 | `volume`   | `50`                 | Playback volume (0–100)              |
 | `tmploc`   | `/tmp/radio`         | Directory used for state files       |

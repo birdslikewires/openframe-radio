@@ -99,9 +99,9 @@ else
             exit 1
         fi
 
-        if ! command -v mplayer &>/dev/null; then
-            echo "Installing mplayer..."
-            of-install mplayer
+        if ! command -v mpv &>/dev/null; then
+            echo "Installing mpv..."
+            apt-get install -y mpv
         fi
 
         if ! command -v inotifywait &>/dev/null; then
@@ -109,7 +109,7 @@ else
             apt-get install -y inotify-tools
         fi
 
-        SED_ARGS=(-e "s/mode=\"[^\"]*\"/mode=\"mplayer\"/"
+        SED_ARGS=(-e "s/mode=\"[^\"]*\"/mode=\"mpv\"/"
                   -e "s/hdhrip=\"[^\"]*\"/hdhrip=\"$hdhrip\"/")
 
     else
