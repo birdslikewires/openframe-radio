@@ -58,8 +58,12 @@ if [ "$TRANSCODER" = true ]; then
     curl -fsSL "$REPO_RAW/transcoder/radio-cleanup.timer" > "$SERVICE_DIR/radio-cleanup.timer"
 
     systemctl daemon-reload
+    systemctl stop icecast2 2>/dev/null || true
+    systemctl disable icecast2 2>/dev/null || true
     systemctl enable --now icecast2
     systemctl reload nginx
+    systemctl stop radio-cleanup.timer 2>/dev/null || true
+    systemctl disable radio-cleanup.timer 2>/dev/null || true
     systemctl enable --now radio-cleanup.timer
 
     echo "Done. Transcoder is running."
@@ -121,6 +125,8 @@ else
 
     systemctl stop radio.service 2>/dev/null || true
     systemctl stop radio-watcher.service 2>/dev/null || true
+    systemctl disable radio.service 2>/dev/null || true
+    systemctl disable radio-watcher.service 2>/dev/null || true
 
     echo "Installing radio.sh..."
     mkdir -p "$INSTALL_DIR"
