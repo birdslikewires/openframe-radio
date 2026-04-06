@@ -66,7 +66,7 @@ if [ "$TRANSCODER" = true ]; then
 
 else
 
-    read -rp "Player mode - (1) mpg123 via transcoder, (2) mplayer direct: " mode_choice
+    read -rp "Player mode - (1) mpg123 via transcoder, (2) mpv direct: " mode_choice
 
     if [ "$mode_choice" = "1" ]; then
 
