@@ -3,7 +3,6 @@
 CHANNEL=$(echo "$REQUEST_URI" | sed -E 's/^\///')
 HDHRIP="HDHRIP_PLACEHOLDER"
 ICECAST_PASS="ICECAST_PASS_PLACEHOLDER"
-ICECAST_ADMIN_PASS="ICECAST_ADMIN_PASS_PLACEHOLDER"
 STREAMDIR="/tmp/radio-streams"
 
 if [[ -z "$CHANNEL" || ! "$CHANNEL" =~ ^[0-9]+$ ]]; then
@@ -15,11 +14,6 @@ mkdir -p "$STREAMDIR"
 
 free_tuners() {
     curl -sf "http://$HDHRIP/tuners.html" | grep -c "not in use"
-}
-
-channel_name() {
-    curl -sf "http://$HDHRIP/lineup.json" \
-        | jq -r --arg ch "$CHANNEL" '.[] | select(.GuideNumber == $ch) | .GuideName' 2>/dev/null
 }
 
 icecast_has_mount() {
@@ -37,8 +31,6 @@ if ! icecast_has_mount && [ "$(free_tuners)" -eq 0 ]; then
     printf "Status: 503 Service Unavailable\r\nContent-Type: text/plain\r\n\r\nNo tuner available.\n"
     exit 1
 fi
-
-STREAM_NAME=$(channel_name)
 
 (
     flock -x 9
@@ -71,12 +63,6 @@ if ! icecast_has_mount; then
     rm -f "$STREAMDIR/$CHANNEL.pid"
     printf "Status: 503 Service Unavailable\r\nContent-Type: text/plain\r\n\r\nNo tuner available.\n"
     exit 1
-fi
-
-# Update the ICY StreamTitle via the Icecast metadata API
-if [ -n "$STREAM_NAME" ]; then
-    ENCODED="${STREAM_NAME// /+}"
-    curl -sf "http://admin:$ICECAST_ADMIN_PASS@localhost:8000/admin/metadata?mount=/$CHANNEL&mode=updinfo&song=$ENCODED" >/dev/null
 fi
 
 HOST=$(echo "$HTTP_HOST" | cut -d: -f1)
