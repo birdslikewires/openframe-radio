@@ -132,9 +132,6 @@ else
     echo "Installing /usr/local/bin/radio..."
     ln -sf "$INSTALL_DIR/radio.sh" /usr/local/bin/radio
 
-    echo "Installing polkit rules..."
-    curl -fsSL "$REPO_RAW/openframe/10-radio.rules" > /etc/polkit-1/rules.d/10-radio.rules
-
     echo "Enabling and starting radio.service..."
     systemctl daemon-reload
     systemctl enable radio.service

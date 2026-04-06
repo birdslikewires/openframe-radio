@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-## radio.sh v1.12 (6th April 2026)
+## radio.sh v1.13 (6th April 2026)
 ##  Streams radio to OpenFrame and restarts if there's a problem.
 ##  Use the accompanying radio.service file.
 
@@ -23,8 +23,7 @@ fi
 # Handle play, pause and channel selection.
 if [ "$1" == "pause" ]; then
 	[ -f "$tmploc/channel" ] && cp "$tmploc/channel" "$tmploc/paused"
-	[ -f "$tmploc/inotifywait.pid" ] && kill "$(cat $tmploc/inotifywait.pid)" 2>/dev/null
-	systemctl stop radio.service
+	echo 0 > "$tmploc/channel"
 	exit 0
 elif [ "$1" == "play" ]; then
 	if [ -f "$tmploc/paused" ]; then
@@ -33,7 +32,6 @@ elif [ "$1" == "play" ]; then
 	else
 		echo "$channel" > "$tmploc/channel"
 	fi
-	systemctl start radio.service
 	exit 0
 elif [[ "$1" =~ ^[+-]?[0-9]+$ ]]; then
 	echo "$1" > "$tmploc/channel"
@@ -58,9 +56,16 @@ else
 	echo "$channel" > "$tmploc/channel"
 fi
 
-# Watch the channel file for changes and restart the service when it's updated.
+# Kill any leftover inotifywait from a previous run.
+[ -f "$tmploc/inotifywait.pid" ] && kill "$(cat $tmploc/inotifywait.pid)" 2>/dev/null
+
+# Watch the channel file for changes.
 while inotifywait -e close_write "$tmploc/channel"; do
-	systemctl restart radio.service
+	if [ "$(cat $tmploc/channel)" = "0" ]; then
+		systemctl stop radio.service
+	else
+		systemctl restart radio.service
+	fi
 done &
 echo $! > "$tmploc/inotifywait.pid"
 
