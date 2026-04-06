@@ -46,11 +46,11 @@ if [ "$TRANSCODER" = true ]; then
     chmod +x /var/www/radio/stream.sh
 
     echo "Installing cleanup script..."
-    curl -fsSL "$REPO_RAW/transcoder/cleanup.sh" > /usr/local/bin/radio-cleanup.sh
+    curl -fsSL "$REPO_RAW/transcoder/radio-cleanup.sh" > /usr/local/bin/radio-cleanup.sh
     chmod +x /usr/local/bin/radio-cleanup.sh
 
     echo "Installing nginx config..."
-    curl -fsSL "$REPO_RAW/transcoder/radio" > /etc/nginx/sites-available/radio
+    curl -fsSL "$REPO_RAW/transcoder/radio.nginx" > /etc/nginx/sites-available/radio
     ln -sf /etc/nginx/sites-available/radio /etc/nginx/sites-enabled/radio
 
     echo "Installing cleanup timer..."
@@ -131,6 +131,9 @@ else
 
     echo "Installing /usr/local/bin/radio..."
     ln -sf "$INSTALL_DIR/radio.sh" /usr/local/bin/radio
+
+    echo "Installing polkit rules..."
+    curl -fsSL "$REPO_RAW/openframe/10-radio.rules" > /etc/polkit-1/rules.d/10-radio.rules
 
     echo "Enabling and starting radio.service..."
     systemctl daemon-reload

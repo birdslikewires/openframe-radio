@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-## radio.sh v1.11 (6th April 2026)
+## radio.sh v1.12 (6th April 2026)
 ##  Streams radio to OpenFrame and restarts if there's a problem.
 ##  Use the accompanying radio.service file.
 
@@ -23,6 +23,7 @@ fi
 # Handle play, pause and channel selection.
 if [ "$1" == "pause" ]; then
 	[ -f "$tmploc/channel" ] && cp "$tmploc/channel" "$tmploc/paused"
+	[ -f "$tmploc/inotifywait.pid" ] && kill "$(cat $tmploc/inotifywait.pid)" 2>/dev/null
 	systemctl stop radio.service
 	exit 0
 elif [ "$1" == "play" ]; then
@@ -61,6 +62,7 @@ fi
 while inotifywait -e close_write "$tmploc/channel"; do
 	systemctl restart radio.service
 done &
+echo $! > "$tmploc/inotifywait.pid"
 
 if [ "$mode" = "mpg123" ]; then
 	exec env DISPLAY= mpg123 -q --buffer 1024 -f $(( 32768 * volume / 100 )) "http://$radioip:5111/$channel"
