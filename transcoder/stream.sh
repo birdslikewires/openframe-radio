@@ -3,6 +3,7 @@
 CHANNEL=$(echo "$REQUEST_URI" | sed -E 's/^\///')
 HDHRIP="HDHRIP_PLACEHOLDER"
 ICECAST_PASS="ICECAST_PASS_PLACEHOLDER"
+ICECAST_ADMIN_PASS="ICECAST_ADMIN_PASS_PLACEHOLDER"
 STREAMDIR="/tmp/radio-streams"
 
 if [[ -z "$CHANNEL" || ! "$CHANNEL" =~ ^[0-9]+$ ]]; then
@@ -75,7 +76,7 @@ fi
 # Update the ICY StreamTitle via the Icecast metadata API
 if [ -n "$STREAM_NAME" ]; then
     ENCODED="${STREAM_NAME// /+}"
-    curl -sf "http://source:$ICECAST_PASS@localhost:8000/admin/metadata?mount=/$CHANNEL&mode=updinfo&song=$ENCODED" >/dev/null
+    curl -sf "http://admin:$ICECAST_ADMIN_PASS@localhost:8000/admin/metadata?mount=/$CHANNEL&mode=updinfo&song=$ENCODED" >/dev/null
 fi
 
 HOST=$(echo "$HTTP_HOST" | cut -d: -f1)

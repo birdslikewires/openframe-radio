@@ -42,6 +42,7 @@ if [ "$TRANSCODER" = true ]; then
     curl -fsSL "$REPO_RAW/transcoder/stream.sh" \
         | sed -e "s/HDHRIP_PLACEHOLDER/$hdhrip/" \
               -e "s/ICECAST_PASS_PLACEHOLDER/$ICECAST_PASS/" \
+              -e "s/ICECAST_ADMIN_PASS_PLACEHOLDER/$ICECAST_ADMIN_PASS/" \
         > /var/www/radio/stream.sh
     chmod +x /var/www/radio/stream.sh
 
