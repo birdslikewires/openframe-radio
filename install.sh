@@ -117,6 +117,8 @@ else
         exit 1
     fi
 
+    systemctl stop radio.service 2>/dev/null || true
+
     echo "Installing radio.sh..."
     mkdir -p "$INSTALL_DIR"
     curl -fsSL "$REPO_RAW/openframe/radio.sh" \
