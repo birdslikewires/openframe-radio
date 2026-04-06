@@ -43,12 +43,14 @@ fi
     if ! icecast_has_mount; then
         [[ "$CHANNEL" -ge 700 ]] && BUFFER=24000 || BUFFER=48000
         STREAM_NAME=$(channel_name)
+        ICE_ARGS=()
+        [ -n "$STREAM_NAME" ] && ICE_ARGS=(-ice_name "$STREAM_NAME")
 
         ffmpeg -hide_banner -loglevel error \
             -probesize "$BUFFER" \
             -i "http://$HDHRIP:5004/auto/v$CHANNEL" \
             -vn -acodec libmp3lame -b:a 128k -f mp3 \
-            ${STREAM_NAME:+-ice_name "$STREAM_NAME"} \
+            "${ICE_ARGS[@]}" \
             "icecast://source:$ICECAST_PASS@localhost:8000/$CHANNEL" \
             </dev/null >/dev/null 2>&1 9>&- &
 
