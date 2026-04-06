@@ -118,6 +118,7 @@ else
     fi
 
     systemctl stop radio.service 2>/dev/null || true
+    systemctl stop radio-watcher.service 2>/dev/null || true
 
     echo "Installing radio.sh..."
     mkdir -p "$INSTALL_DIR"
@@ -131,11 +132,20 @@ else
         | sed "s|ExecStart=.*|ExecStart=$INSTALL_DIR/radio.sh|" \
         > "$SERVICE_DIR/radio.service"
 
+    echo "Installing radio-watcher.service..."
+    curl -fsSL "$REPO_RAW/openframe/radio-watcher.sh" > "$INSTALL_DIR/radio-watcher.sh"
+    chmod +x "$INSTALL_DIR/radio-watcher.sh"
+    curl -fsSL "$REPO_RAW/openframe/radio-watcher.service" \
+        | sed "s|ExecStart=.*|ExecStart=$INSTALL_DIR/radio-watcher.sh|" \
+        > "$SERVICE_DIR/radio-watcher.service"
+
     echo "Installing /usr/local/bin/radio..."
     ln -sf "$INSTALL_DIR/radio.sh" /usr/local/bin/radio
 
-    echo "Enabling and starting radio.service..."
+    echo "Enabling and starting services..."
     systemctl daemon-reload
+    systemctl enable radio-watcher.service
+    systemctl start radio-watcher.service
     systemctl enable radio.service
     systemctl start radio.service
 

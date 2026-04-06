@@ -1,0 +1,12 @@
+[Unit]
+Description=Radio channel watcher
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/opt/openframe-radio/radio-watcher.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
