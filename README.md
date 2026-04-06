@@ -49,21 +49,23 @@ sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/birdslikewires/open
 ## Usage
 
 ```bash
-radio.sh play          # Start or resume playback
-radio.sh pause         # Pause playback
-radio.sh 707           # Switch to channel 707
+radio play             # Start or resume playback
+radio pause            # Pause playback
+radio 707              # Switch to channel 707
 ```
 
 ## Configuration
 
 **OpenFrame** — edit `/opt/openframe-radio/radio.sh`:
 
-| Variable   | Default              | Description                    |
-|------------|----------------------|--------------------------------|
-| `radioip`  | *(set by installer)* | Transcoder IP address          |
-| `channel`  | `707`                | Default channel on startup     |
-| `volume`   | `50`                 | Playback volume (0–100)        |
-| `tmploc`   | `/tmp/radio`         | Directory used for state files |
+| Variable   | Default              | Description                          |
+|------------|----------------------|--------------------------------------|
+| `mode`     | `mpg123`             | Player mode (`mpg123` or `mplayer`)  |
+| `radioip`  | *(set by installer)* | Transcoder IP address (mpg123 mode)  |
+| `hdhrip`   | *(set by installer)* | HDHomeRun IP address (mplayer mode)  |
+| `channel`  | `707`                | Default channel on startup           |
+| `volume`   | `50`                 | Playback volume (0–100)              |
+| `tmploc`   | `/tmp/radio`         | Directory used for state files       |
 
 **Transcoder** — edit `/var/www/radio/stream.sh`:
 
