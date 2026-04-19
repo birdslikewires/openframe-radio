@@ -7,6 +7,7 @@ tmploc="/tmp/radio"
 
 mkdir -p "$tmploc"
 [ -f "$tmploc/channel" ] || echo "707" > "$tmploc/channel"
+chmod 666 "$tmploc/channel"
 
 while inotifywait -e close_write "$tmploc/channel" 2>/dev/null; do
 	channel=$(cat "$tmploc/channel" 2>/dev/null)

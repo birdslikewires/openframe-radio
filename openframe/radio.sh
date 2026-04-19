@@ -24,6 +24,7 @@ fi
 if [ "$1" == "pause" ]; then
 	[ -f "$tmploc/channel" ] && cp "$tmploc/channel" "$tmploc/paused"
 	echo 0 > "$tmploc/channel"
+	chmod 666 "$tmploc/channel"
 	exit 0
 elif [ "$1" == "play" ]; then
 	if [ -f "$tmploc/paused" ]; then
@@ -32,9 +33,11 @@ elif [ "$1" == "play" ]; then
 	else
 		echo "$channel" > "$tmploc/channel"
 	fi
+	chmod 666 "$tmploc/channel"
 	exit 0
 elif [[ "$1" =~ ^[+-]?[0-9]+$ ]]; then
 	echo "$1" > "$tmploc/channel"
+	chmod 666 "$tmploc/channel"
 	exit 0
 elif [ "$1" != "" ]; then
 	exit 1
