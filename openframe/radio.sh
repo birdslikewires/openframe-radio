@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-## radio.sh v1.15 (6th April 2026)
+## radio.sh v1.16 (19th April 2026)
 ##  Streams radio to OpenFrame and restarts if there's a problem.
 ##  Use the accompanying radio.service and radio-watcher.service files.
 
@@ -57,7 +57,7 @@ else
 fi
 
 if [ "$mode" = "mpg123" ]; then
-	exec env DISPLAY= mpg123 -q --buffer 1024 -f $(( 32768 * volume / 100 )) "http://$radioip:5111/$channel"
+	exec env DISPLAY= mpg123 -q -o alsa --buffer 1024 -f $(( 32768 * volume / 100 )) "http://$radioip:5111/$channel"
 elif [ "$mode" = "mpv" ]; then
 	exec mpv --no-video --cache=yes --demuxer-max-bytes=4MiB --volume="$volume" "http://$hdhrip:5004/auto/v$channel"
 fi

@@ -1,6 +1,6 @@
 [Unit]
 Description=Radio
-After=multi-user.target
+After=multi-user.target sound.target
 
 [Service]
 Type=simple
