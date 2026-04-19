@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-## radio-watcher.sh
+## radio-watcher.sh v1.17 (19th April 2026)
 ##  Watches the channel file and starts, stops or restarts radio.service.
 
 tmploc="/tmp/radio"

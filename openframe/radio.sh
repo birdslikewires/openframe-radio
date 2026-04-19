@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-## radio.sh v1.16 (19th April 2026)
+## radio.sh v1.17 (19th April 2026)
 ##  Streams radio to OpenFrame and restarts if there's a problem.
 ##  Use the accompanying radio.service and radio-watcher.service files.
 
