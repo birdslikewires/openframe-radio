@@ -39,6 +39,7 @@ fi
         [[ "$CHANNEL" -ge 700 ]] && BUFFER=24000 || BUFFER=48000
 
         ffmpeg -hide_banner -loglevel error \
+            -rw_timeout 10000000 \
             -probesize "$BUFFER" \
             -i "http://$HDHRIP:5004/auto/v$CHANNEL" \
             -vn -acodec libmp3lame -b:a 128k -f mp3 \
