@@ -18,9 +18,9 @@ done
 if [ "$TRANSCODER" = true ]; then
 
     # Read existing values if present
-    existing_hdhrip=$(sed -n 's/^HDHRIP="\(.*\)"/\1/p' /var/www/radio/stream.sh 2>/dev/null)
-    existing_icecast_pass=$(sed -n 's/^ICECAST_PASS="\(.*\)"/\1/p' /var/www/radio/stream.sh 2>/dev/null)
-    existing_admin_pass=$(sed -n 's|.*<admin-password>\(.*\)</admin-password>.*|\1|p' /etc/icecast2/icecast.xml 2>/dev/null)
+    existing_hdhrip=$(sed -n 's/^HDHRIP="\(.*\)"/\1/p' /var/www/radio/stream.sh 2>/dev/null) || true
+    existing_icecast_pass=$(sed -n 's/^ICECAST_PASS="\(.*\)"/\1/p' /var/www/radio/stream.sh 2>/dev/null) || true
+    existing_admin_pass=$(sed -n 's|.*<admin-password>\(.*\)</admin-password>.*|\1|p' /etc/icecast2/icecast.xml 2>/dev/null) || true
 
     # Prompt for HDHomeRun IP
     read -rp "HDHomeRun IP address${existing_hdhrip:+ [$existing_hdhrip]}: " input_hdhrip
@@ -83,10 +83,10 @@ if [ "$TRANSCODER" = true ]; then
 else
 
     # Read existing values if present
-    existing_mode=$(sed -n 's/^mode="\(.*\)"/\1/p' "$INSTALL_DIR/radio.sh" 2>/dev/null)
-    existing_radioip=$(sed -n 's/^radioip="\(.*\)"/\1/p' "$INSTALL_DIR/radio.sh" 2>/dev/null)
-    existing_hdhrip=$(sed -n 's/^hdhrip="\(.*\)"/\1/p' "$INSTALL_DIR/radio.sh" 2>/dev/null)
-    existing_device=$(sed -n 's/.*name = "\(.*\)";/\1/p' /etc/shairport-sync.conf 2>/dev/null | head -1)
+    existing_mode=$(sed -n 's/^mode="\(.*\)"/\1/p' "$INSTALL_DIR/radio.sh" 2>/dev/null) || true
+    existing_radioip=$(sed -n 's/^radioip="\(.*\)"/\1/p' "$INSTALL_DIR/radio.sh" 2>/dev/null) || true
+    existing_hdhrip=$(sed -n 's/^hdhrip="\(.*\)"/\1/p' "$INSTALL_DIR/radio.sh" 2>/dev/null) || true
+    existing_device=$(sed -n 's/.*name = "\(.*\)";/\1/p' /etc/shairport-sync.conf 2>/dev/null | head -1) || true
 
     if [ "$existing_mode" = "mpg123" ]; then
         mode_default="1"
