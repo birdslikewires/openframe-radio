@@ -17,16 +17,28 @@ done
 
 if [ "$TRANSCODER" = true ]; then
 
+    # Read existing values if present
+    existing_hdhrip=$(sed -n 's/^HDHRIP="\(.*\)"/\1/p' /var/www/radio/stream.sh 2>/dev/null)
+    existing_icecast_pass=$(sed -n 's/^ICECAST_PASS="\(.*\)"/\1/p' /var/www/radio/stream.sh 2>/dev/null)
+    existing_admin_pass=$(sed -n 's|.*<admin-password>\(.*\)</admin-password>.*|\1|p' /etc/icecast2/icecast.xml 2>/dev/null)
+
     # Prompt for HDHomeRun IP
-    read -rp "HDHomeRun IP address: " hdhrip
+    read -rp "HDHomeRun IP address${existing_hdhrip:+ [$existing_hdhrip]}: " input_hdhrip
+    hdhrip="${input_hdhrip:-$existing_hdhrip}"
 
     if [[ ! "$hdhrip" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
         echo "Invalid IP address." >&2
         exit 1
     fi
 
-    ICECAST_PASS=$(openssl rand -hex 16)
-    ICECAST_ADMIN_PASS=$(openssl rand -hex 16)
+    # Keep existing passwords or generate new ones
+    if [ -n "$existing_icecast_pass" ]; then
+        ICECAST_PASS="$existing_icecast_pass"
+        ICECAST_ADMIN_PASS="$existing_admin_pass"
+    else
+        ICECAST_PASS=$(openssl rand -hex 16)
+        ICECAST_ADMIN_PASS=$(openssl rand -hex 16)
+    fi
 
     echo "Installing dependencies..."
     DEBIAN_FRONTEND=noninteractive apt-get install -y nginx fcgiwrap ffmpeg icecast2
@@ -70,18 +82,34 @@ if [ "$TRANSCODER" = true ]; then
 
 else
 
-    read -rp "Player mode - (1) mpg123 via transcoder, (2) mpv direct: " mode_choice
+    # Read existing values if present
+    existing_mode=$(sed -n 's/^mode="\(.*\)"/\1/p' "$INSTALL_DIR/radio.sh" 2>/dev/null)
+    existing_radioip=$(sed -n 's/^radioip="\(.*\)"/\1/p' "$INSTALL_DIR/radio.sh" 2>/dev/null)
+    existing_hdhrip=$(sed -n 's/^hdhrip="\(.*\)"/\1/p' "$INSTALL_DIR/radio.sh" 2>/dev/null)
+    existing_device=$(sed -n 's/.*name = "\(.*\)";/\1/p' /etc/shairport-sync.conf 2>/dev/null | head -1)
+
+    if [ "$existing_mode" = "mpg123" ]; then
+        mode_default="1"
+    elif [ "$existing_mode" = "mpv" ]; then
+        mode_default="2"
+    else
+        mode_default=""
+    fi
+
+    read -rp "Player mode - (1) mpg123 via transcoder, (2) mpv direct${mode_default:+ [$mode_default]}: " input_mode
+    mode_choice="${input_mode:-$mode_default}"
 
     if [ "$mode_choice" = "1" ]; then
 
-        read -rp "Transcoder IP address: " radioip
+        read -rp "Transcoder IP address${existing_radioip:+ [$existing_radioip]}: " input_radioip
+        radioip="${input_radioip:-$existing_radioip}"
 
         if [[ ! "$radioip" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
             echo "Invalid IP address." >&2
             exit 1
         fi
 
-		apt-get update
+        apt-get update
 
         if ! command -v mpg123 &>/dev/null; then
             echo "Installing mpg123..."
@@ -98,7 +126,8 @@ else
 
     elif [ "$mode_choice" = "2" ]; then
 
-        read -rp "HDHomeRun IP address: " hdhrip
+        read -rp "HDHomeRun IP address${existing_hdhrip:+ [$existing_hdhrip]}: " input_hdhrip
+        hdhrip="${input_hdhrip:-$existing_hdhrip}"
 
         if [[ ! "$hdhrip" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
             echo "Invalid IP address." >&2
@@ -157,10 +186,17 @@ else
     systemctl enable radio.service
     systemctl start radio.service
 
-    read -rp "Install shairport-sync (AirPlay)? [y/N] " install_shairport
+    if [ -n "$existing_device" ]; then
+        read -rp "Install shairport-sync (AirPlay)? [Y/n] " install_shairport
+        install_shairport="${install_shairport:-y}"
+    else
+        read -rp "Install shairport-sync (AirPlay)? [y/N] " install_shairport
+    fi
+
     if [[ "$install_shairport" =~ ^[Yy]$ ]]; then
 
-        read -rp "AirPlay device name: " device_name
+        read -rp "AirPlay device name${existing_device:+ [$existing_device]}: " input_device
+        device_name="${input_device:-$existing_device}"
 
         if ! command -v shairport-sync &>/dev/null; then
             echo "Installing shairport-sync..."
